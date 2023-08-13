@@ -1,5 +1,8 @@
 {
-  "name": "react-symbol-canvas",
+  "name": "@Code-Conjurer/react-symbol-canvas",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com/Code-Conjurer"
+  },
   "version": "0.0.1",
   "description": "",
   "scripts": {
