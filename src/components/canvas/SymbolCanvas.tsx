@@ -69,7 +69,7 @@ const SymbolCanvas = ({
   }, [canvas2d, canvasHeight, canvasWidth]);
 
   const draw = useCallback(
-    ([x, y]: Point, obj: TileLocation | Entity | ScaledTile) => {
+    ([x, y]: Point, obj: Entity | ScaledTile | Tile | TileLocation) => {
       let width = tileWidth;
       let height = tileHeight;
 
@@ -86,14 +86,14 @@ const SymbolCanvas = ({
       canvas2d.drawImage(
         image,
         // sprite from sheet
-        0 * tileWidth,
+        1 * tileWidth,
         0 * tileHeight,
         tileWidth,
         tileHeight,
 
         // canvas draw location
-        x,
-        y,
+        x * tileWidth,
+        y * tileHeight,
         width,
         height
       );
@@ -148,7 +148,21 @@ const SymbolCanvas = ({
     //   tileHeight
     // );
     //   };
-  }, []);
+  }, [height, width]);
+
+  useEffect(() => {
+    if (canvas2d === null) return;
+
+    setTimeout(() => {
+      const tile: Tile = {};
+      const scaled: ScaledTile = { width: 3, height: 3, tile };
+
+      draw([0, 0], tile);
+      draw([0, 1], tile);
+      draw([1, 0], tile);
+      draw([1, 1], scaled);
+    }, 2000);
+  }, [canvas2d, draw]);
 
   return <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />;
 };
