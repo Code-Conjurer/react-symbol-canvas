@@ -120,6 +120,9 @@ const SymbolCanvas = ({
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d')!;
 
+    // initalize image context
+    ctx.imageSmoothingEnabled = false;
+
     setCanvas2d(ctx);
 
     setCanvasData([
@@ -164,7 +167,14 @@ const SymbolCanvas = ({
     }, 2000);
   }, [canvas2d, draw]);
 
-  return <canvas ref={canvasRef} width={canvasWidth} height={canvasHeight} />;
+  return (
+    <canvas
+      style={{ border: '1px solid red' }}
+      ref={canvasRef}
+      width={canvasWidth}
+      height={canvasHeight}
+    />
+  );
 };
 
 export default SymbolCanvas;
