@@ -8,6 +8,7 @@ import React, {
 } from 'react';
 import { Entity, Layer, Point, ScaledTile, Tile, TileLocation } from '../types';
 import CanvasLayer from './CanvasLayer';
+import useRenderActions from '../hooks/useRenderActions';
 
 export type SymbolCanvasProps = {
   spriteSheetSrc: string;
@@ -36,15 +37,34 @@ const SymbolCanvas = ({
     new Array(layers).fill(undefined).map(() => createRef<HTMLCanvasElement>())
   );
 
+  const [canvasContexts, setContexts] = useState<
+    Array<CanvasRenderingContext2D | undefined>
+  >([]);
+
   const [canvasWidth, canvasHeight] = useMemo(() => {
     return [tileWidth * width, tileHeight * height];
   }, [height, tileHeight, tileWidth, width]);
 
-  // const image = useMemo(() => {
-  //   const img = new Image();
-  //   img.src = spriteSheetSrc;
-  //   return img;
-  // }, [spriteSheetSrc]);
+  const image = useMemo(() => {
+    const img = new Image();
+    img.src = spriteSheetSrc;
+    return img;
+  }, [spriteSheetSrc]);
+
+  useEffect(() => {
+    const ctxs = canvasRefs.current.map((ref) => {
+      if (ref.current === null) return;
+
+      const ctx = ref.current.getContext('2d')!;
+
+      // initalize image context
+      ctx.imageSmoothingEnabled = false;
+
+      return ctx;
+    });
+
+    setContexts(ctxs);
+  }, []);
 
   // useEffect(() => {
   //   if (canvasRef.current === null) return;
@@ -85,19 +105,42 @@ const SymbolCanvas = ({
   //   //   };
   // }, [height, width]);
 
-  // // useEffect(() => {
-  // //   if (canvas2d === null) return;
+  const { draw, clearCanvas } = useRenderActions({
+    canvasContexts,
+    spriteSheet: image,
+    canvasWidth,
+    canvasHeight,
+    tileWidth,
+    tileHeight,
+  });
 
-  // //   setTimeout(() => {
-  // //     const tile: Tile = {};
-  // //     const scaled: ScaledTile = { width: 3, height: 3, tile };
+  useEffect(() => {
+    setTimeout(() => {
+      const tile: Tile = {};
+      const scaled: ScaledTile = { width: 3, height: 3, tile };
 
-  // //     draw([0, 0], tile);
-  // //     draw([0, 1], tile);
-  // //     draw([1, 0], tile);
-  // //     draw([1, 1], scaled);
-  // //   }, 2000);
-  // // }, [canvas2d, draw]);
+      draw({ layer: 0, point: [0, 0], scaledTile: scaled });
+    }, 2000);
+
+    for (let i = 0; i < 4000; i += 100) {
+      setTimeout(() => {
+        const x = Math.floor(Math.random() * width);
+        const y = Math.floor(Math.random() * height);
+
+        const tile: Tile = {};
+        const scaled: ScaledTile = { width: 3, height: 3, tile };
+
+        draw({ layer: 1, point: [x, y], tile });
+      }, i);
+    }
+
+    setTimeout(() => {
+      const tile: Tile = {};
+      const scaled: ScaledTile = { width: 3, height: 3, tile };
+
+      clearCanvas({ layer: 1 });
+    }, 4000);
+  }, [draw]);
 
   return (
     <div
@@ -105,7 +148,8 @@ const SymbolCanvas = ({
     >
       {canvasRefs.current.map((ref, index) => (
         <CanvasLayer
-          key={ref.current?.id}
+          key={`${index}`}
+          ref={ref}
           layer={index}
           width={canvasWidth}
           height={canvasHeight}
