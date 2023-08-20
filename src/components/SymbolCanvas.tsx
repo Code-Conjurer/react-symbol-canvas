@@ -5,41 +5,15 @@ import React, {
   useRef,
   useState,
 } from 'react';
-
-type SymbolCanvasProps = {
-  spriteSheetSrc: string;
-  tileWidth: number;
-  tileHeight: number;
-  width: number;
-  height: number;
-};
-
-type Point = [number, number];
-
-type Tile = {
-  origin?: Entity;
-};
-
-type TileLocation = {
-  x: number;
-  y: number;
-  tile: Tile;
-};
-
-type Entity = {
-  start: Tile;
-  tiles: TileLocation[];
-};
-
-type ScaledTile = {
-  width: number;
-  height: number;
-  tile: Tile;
-};
-
-type Layer = {
-  rawGrid: (Tile | undefined)[][];
-};
+import {
+  Entity,
+  Layer,
+  Point,
+  ScaledTile,
+  SymbolCanvasProps,
+  Tile,
+  TileLocation,
+} from '../types';
 
 const SymbolCanvas = ({
   spriteSheetSrc,
