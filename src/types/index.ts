@@ -1,11 +1,3 @@
-export type SymbolCanvasProps = {
-  spriteSheetSrc: string;
-  tileWidth: number;
-  tileHeight: number;
-  width: number;
-  height: number;
-};
-
 export type Point = [number, number];
 
 export type Tile = {
