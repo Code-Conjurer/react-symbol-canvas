@@ -58,17 +58,19 @@ const useRenderActions = ({
 
       let width = tileWidth;
       let height = tileHeight;
+      let t = tile;
 
       if (scaledTile) {
         width = tileWidth * scaledTile.width;
         height = tileHeight * scaledTile.height;
+        t = scaledTile.tile;
       }
 
       canvasContexts[layer]?.drawImage(
         spriteSheet,
         // sprite from sheet
-        1 * tileWidth,
-        0 * tileHeight,
+        t!.tileImageX * tileWidth,
+        t!.tileImageY * tileHeight,
         tileWidth,
         tileHeight,
         // canvas draw location

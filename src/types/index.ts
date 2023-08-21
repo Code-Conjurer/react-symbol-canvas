@@ -1,6 +1,8 @@
 export type Point = [number, number];
 
 export type Tile = {
+  tileImageX: number;
+  tileImageY: number;
   origin?: Entity;
 };
 

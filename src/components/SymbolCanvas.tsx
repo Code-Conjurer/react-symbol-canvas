@@ -114,34 +114,6 @@ const SymbolCanvas = ({
     tileHeight,
   });
 
-  useEffect(() => {
-    setTimeout(() => {
-      const tile: Tile = {};
-      const scaled: ScaledTile = { width: 3, height: 3, tile };
-
-      draw({ layer: 0, point: [0, 0], scaledTile: scaled });
-    }, 2000);
-
-    for (let i = 0; i < 4000; i += 100) {
-      setTimeout(() => {
-        const x = Math.floor(Math.random() * width);
-        const y = Math.floor(Math.random() * height);
-
-        const tile: Tile = {};
-        const scaled: ScaledTile = { width: 3, height: 3, tile };
-
-        draw({ layer: 1, point: [x, y], tile });
-      }, i);
-    }
-
-    setTimeout(() => {
-      const tile: Tile = {};
-      const scaled: ScaledTile = { width: 3, height: 3, tile };
-
-      clearCanvas({ layer: 1 });
-    }, 4000);
-  }, [draw]);
-
   return (
     <div
       style={{ position: 'relative', width: canvasWidth, height: canvasHeight }}
