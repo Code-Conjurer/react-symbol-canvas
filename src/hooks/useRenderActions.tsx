@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Entity, Point, ScaledTile, Tile, TileLocation } from '../types';
+import { Point, ScaledTile, Tile, TileLocation } from '../types';
 
 type ClearLayerProps = {
   layer: number;
@@ -8,7 +8,6 @@ type ClearLayerProps = {
 type DrawProps = {
   layer: number;
   point: Point;
-  entity?: Entity;
   scaledTile?: ScaledTile;
   tile?: Tile;
 };
@@ -46,19 +45,7 @@ const useRenderActions = ({
   );
 
   const draw = useCallback(
-    ({ layer, point: [x, y], entity, scaledTile, tile }: DrawProps) => {
-      if (entity) {
-        for (let i = 0; i < entity.tiles.length; i++) {
-          const tileLoc = entity.tiles[i];
-          draw({
-            layer,
-            point: [x + tileLoc.x, y + tileLoc.y],
-            tile: tileLoc.tile,
-          });
-        }
-        return;
-      }
-
+    ({ layer, point: [x, y], scaledTile, tile }: DrawProps) => {
       let width = tileWidth;
       let height = tileHeight;
       let t = tile;

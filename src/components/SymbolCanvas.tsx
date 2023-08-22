@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Entity, Layer, Point, ScaledTile, Tile, TileLocation } from '../types';
+import { Layer, Point, ScaledTile, Tile, TileLocation } from '../types';
 import CanvasLayer from './CanvasLayer';
 import useRenderActions from '../hooks/useRenderActions';
 
