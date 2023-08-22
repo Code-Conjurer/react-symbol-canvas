@@ -105,7 +105,7 @@ const SymbolCanvas = ({
   //   //   };
   // }, [height, width]);
 
-  const { draw, clearLayer } = useRenderActions({
+  const { draw, move, clearLayer } = useRenderActions({
     canvasContexts,
     spriteSheet: image,
     canvasWidth,
@@ -113,6 +113,43 @@ const SymbolCanvas = ({
     tileWidth,
     tileHeight,
   });
+
+  useEffect(() => {
+    setTimeout(() => {
+      for (let i = 0; i < 10; i++) {
+        for (let j = 0; j < 10; j++) {
+          draw({
+            layer: 0,
+            point: [i, j],
+            tile: { tileImageX: 0, tileImageY: 11 },
+          });
+        }
+      }
+      draw({ layer: 0, point: [0, 0], tile: { tileImageX: 1, tileImageY: 0 } });
+    }, 2000);
+
+    setTimeout(() => {
+      move({ layer: 0, from: [0, 0], to: [0, 0] });
+    }, 3000);
+    setTimeout(() => {
+      move({ layer: 0, from: [0, 0], to: [1, 0] });
+    }, 3500);
+    setTimeout(() => {
+      move({ layer: 0, from: [1, 0], to: [1, 1] });
+      draw({ layer: 0, point: [0, 0], tile: { tileImageX: 1, tileImageY: 0 } });
+    }, 4000);
+    setTimeout(() => {
+      move({ layer: 0, from: [1, 1], to: [0, 1] });
+    }, 4500);
+    setTimeout(() => {
+      move({ layer: 0, from: [0, 0], to: [2, 2] });
+      // move({ layer: 0, from: [0, 1], to: [0, 0] });
+    }, 5000);
+    setTimeout(() => {
+      // move({ layer: 0, from: [0, 0], to: [2, 2] });
+      move({ layer: 0, from: [0, 1], to: [0, 0] });
+    }, 6000);
+  }, [draw, move]);
 
   return (
     <div
