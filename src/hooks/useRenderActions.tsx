@@ -1,7 +1,7 @@
 import { useCallback } from 'react';
 import { Entity, Point, ScaledTile, Tile, TileLocation } from '../types';
 
-type ClearCanvasProps = {
+type ClearLayerProps = {
   layer: number;
 };
 
@@ -13,9 +13,12 @@ type DrawProps = {
   tile?: Tile;
 };
 
+type MoveProps = {};
+
 type Actions = {
-  clearCanvas: (props: ClearCanvasProps) => void;
+  clearLayer: (props: ClearLayerProps) => void;
   draw: (props: DrawProps) => void;
+  move: (props: MoveProps) => void;
 };
 
 type UseRenderActionsType = {
@@ -35,8 +38,8 @@ const useRenderActions = ({
   tileWidth,
   tileHeight,
 }: UseRenderActionsType): Actions => {
-  const clearCanvas = useCallback(
-    ({ layer }: ClearCanvasProps) => {
+  const clearLayer = useCallback(
+    ({ layer }: ClearLayerProps) => {
       canvasContexts[layer]?.clearRect(0, 0, canvasWidth, canvasHeight);
     },
     [canvasContexts, canvasHeight, canvasWidth]
@@ -83,6 +86,8 @@ const useRenderActions = ({
     [canvasContexts, spriteSheet, tileHeight, tileWidth]
   );
 
+  const move = ({}: MoveProps) => {};
+
   // const drawLayer = useCallback(
   //   (layerIndex: number) => {
   //     const layer = canvasData[layerIndex];
@@ -96,7 +101,7 @@ const useRenderActions = ({
   //   [canvasData]
   // );
 
-  return { clearCanvas, draw };
+  return { clearLayer, draw, move };
 };
 
 export default useRenderActions;

@@ -24,5 +24,5 @@ export type ScaledTile = {
 };
 
 export type Layer = {
-  rawGrid: (Tile | undefined)[][];
+  rawGrid: (Tile | Entity | ScaledTile | undefined)[][];
 };

@@ -105,7 +105,7 @@ const SymbolCanvas = ({
   //   //   };
   // }, [height, width]);
 
-  const { draw, clearCanvas } = useRenderActions({
+  const { draw, clearLayer } = useRenderActions({
     canvasContexts,
     spriteSheet: image,
     canvasWidth,
