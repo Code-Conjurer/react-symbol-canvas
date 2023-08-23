@@ -12,6 +12,13 @@ type DrawProps = {
   tile?: Tile;
 };
 
+type ClearProps = {
+  layer: number;
+  point: Point;
+  width?: number;
+  height?: number;
+};
+
 type MoveProps = {
   layer: number;
   from: Point;
@@ -23,6 +30,7 @@ type MoveProps = {
 type Actions = {
   clearLayer: ({ layer }: ClearLayerProps) => void;
   draw: ({ layer, point, scaledTile, tile }: DrawProps) => void;
+  clear: ({ layer, point }: ClearProps) => void;
   move: ({ layer, from, to, width, height }: MoveProps) => void;
 };
 
@@ -79,6 +87,21 @@ const useRenderActions = ({
     [canvasContexts, spriteSheet, tileHeight, tileWidth]
   );
 
+  const clear = useCallback(
+    ({ layer, point: [x, y], width, height }: ClearProps) => {
+      const ctx = canvasContexts[layer];
+      if (!ctx) return;
+
+      const pixelWidth = tileWidth * (width ?? 1);
+      const pixelHeight = tileHeight * (height ?? 1);
+      const pixelX = x * tileWidth;
+      const pixelY = y * tileHeight;
+
+      ctx.clearRect(pixelX, pixelY, pixelWidth, pixelHeight);
+    },
+    [canvasContexts, tileHeight, tileWidth]
+  );
+
   const move = ({ layer, from, to, width, height }: MoveProps) => {
     const ctx = canvasContexts[layer];
 
@@ -91,41 +114,65 @@ const useRenderActions = ({
     const toX = to[0] * tileWidth;
     const toY = to[1] * tileHeight;
 
-    const cutImage = ctx.getImageData(fromX, fromY, pixelWidth, pixelHeight);
+    const image = ctx.getImageData(fromX, fromY, pixelWidth, pixelHeight);
+    clear({ layer, point: from, width, height });
+    ctx.putImageData(image, toX, toY);
 
-    const pasteImage = ctx.createImageData(
-      Math.abs(fromX - toX) + pixelWidth,
-      Math.abs(fromY - toY) + pixelHeight,
-      { colorSpace: cutImage.colorSpace }
-    );
+    // const isPositiveTransposeX = fromX < toX;
+    // const isPositiveTransposeY = fromY < toY;
 
-    const isPositiveTransposeX = fromX < toX;
-    const isPositiveTransposeY = fromY < toY;
-    console.log('🙂', cutImage, pasteImage, toY - fromY);
+    // const pasteImage = ctx.getImageData(
+    //   isPositiveTransposeX ? fromX : toX,
+    //   isPositiveTransposeY ? fromY : toY,
+    //   Math.abs(fromX - toX) + pixelWidth,
+    //   Math.abs(fromY - toY) + pixelHeight
+    //   // { colorSpace: cutImage.colorSpace }
+    // );
 
-    // for (let i = 0; i < cutImage.data.length; i++) {
-    //   const xTranspose = isPositiveTransposeX ? toX * 4 * pasteImage.width : 0;
-    //   const yTranspose = isPositiveTransposeY ? toY * 4 : 0;
-    //   pasteImage.data[xTranspose + yTranspose + i] = cutImage.data[i];
+    // console.log('🙂');
+
+    // // for (let i = 0; i < cutImage.data.length; i++) {
+    // //   const xTranspose = isPositiveTransposeX ? toX * 4 * pasteImage.width : 0;
+    // //   const yTranspose = isPositiveTransposeY ? toY * 4 : 0;
+    // //   pasteImage.data[xTranspose + yTranspose + i] = cutImage.data[i];
+    // // }
+
+    // for (let i = 0; i < pixelWidth * 4; i++) {
+    //   for (let j = 0; j < pixelHeight * 4; j++) {
+    //     const xSrcOffset = !isPositiveTransposeX ? (fromX - toX) * 4 : 0;
+    //     const ySrcOffset = !isPositiveTransposeY ? (fromY - toY) * 4 : 0;
+
+    //     const xDestOffset = isPositiveTransposeX ? (toX - fromX) * 4 : 0;
+    //     const yDestOffset = isPositiveTransposeY ? (toY - fromY) * 4 : 0;
+    //     // pasteImage.data[
+    //     //   i + j * (pasteImage.width * 4) + xOffset + yOffset * pasteImage.width
+    //     // ] = cutImage.data[i + j * (cutImage.width * 4)];
+
+    //     // pasteImage.data[
+    //     //   i + j * (pasteImage.width * 4) + xOffset + yOffset * pasteImage.width
+    //     // ];
+
+    //     const srcIndex = i + j * (pasteImage.width * 4); //+
+    //     xSrcOffset + ySrcOffset * pasteImage.width;
+
+    //     const destIndex =
+    //       i +
+    //       j * (pasteImage.width * 4) +
+    //       xDestOffset +
+    //       yDestOffset * pasteImage.width;
+
+    //     pasteImage.data[destIndex] = pasteImage.data[srcIndex];
+    //     pasteImage.data[srcIndex] = 0;
+    //   }
     // }
 
-    for (let i = 0; i < cutImage.width * 4; i++) {
-      for (let j = 0; j < cutImage.height * 4; j++) {
-        const xOffset = isPositiveTransposeX ? (toX - fromX) * 4 : 0;
-        const yOffset = isPositiveTransposeY ? (toY - fromY) * 4 : 0;
-        pasteImage.data[
-          i + j * (pasteImage.width * 4) + xOffset + yOffset * pasteImage.width
-        ] = cutImage.data[i + j * (cutImage.width * 4)];
-      }
-    }
-
-    ctx.putImageData(
-      pasteImage,
-      isPositiveTransposeX ? fromX : toX,
-      isPositiveTransposeY ? fromY : toY
-      // isPositiveTransposeX ? fromX : toX - pixelWidth,
-      // isPositiveTransposeY ? fromY : toY - pixelHeight
-    );
+    // ctx.putImageData(
+    //   pasteImage,
+    //   isPositiveTransposeX ? fromX : toX,
+    //   isPositiveTransposeY ? fromY : toY
+    //   // isPositiveTransposeX ? fromX : toX - pixelWidth,
+    //   // isPositiveTransposeY ? fromY : toY - pixelHeight
+    // );
   };
 
   // const drawLayer = useCallback(
@@ -141,7 +188,7 @@ const useRenderActions = ({
   //   [canvasData]
   // );
 
-  return { clearLayer, draw, move };
+  return { clearLayer, draw, clear, move };
 };
 
 export default useRenderActions;
