@@ -43,7 +43,7 @@ type MoveProps = {
   height?: number;
 };
 
-type Actions = {
+export type RenderActions = {
   clearLayer: ({ layer }: ClearLayerProps) => void;
   draw: ({ layer, point, scaledTile, tile }: DrawProps) => void;
   highlight: ({ layer, point, color, width, height }: HighlightProps) => void;
@@ -68,7 +68,7 @@ const useRenderActions = ({
   canvasHeight,
   tileWidth,
   tileHeight,
-}: UseRenderActionsType): Actions => {
+}: UseRenderActionsType): RenderActions => {
   const clearLayer = useCallback(
     ({ layer }: ClearLayerProps) => {
       canvasContexts[layer]?.clearRect(0, 0, canvasWidth, canvasHeight);
