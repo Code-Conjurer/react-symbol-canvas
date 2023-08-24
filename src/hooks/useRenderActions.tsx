@@ -1,5 +1,5 @@
 import { useCallback } from 'react';
-import { Point, ScaledTile, Tile, TileLocation } from '../types';
+import { Color, Point, ScaledTile, Tile, TileLocation } from '../types';
 
 type ClearLayerProps = {
   layer: number;
@@ -10,6 +10,22 @@ type DrawProps = {
   point: Point;
   scaledTile?: ScaledTile;
   tile?: Tile;
+};
+
+type HighlightProps = {
+  layer: number;
+  point: Point;
+  color: Color;
+  width?: number;
+  height?: number;
+};
+
+type ColorProps = {
+  layer: number;
+  point: Point;
+  color: Color;
+  width?: number;
+  height?: number;
 };
 
 type ClearProps = {
@@ -30,7 +46,9 @@ type MoveProps = {
 type Actions = {
   clearLayer: ({ layer }: ClearLayerProps) => void;
   draw: ({ layer, point, scaledTile, tile }: DrawProps) => void;
-  clear: ({ layer, point }: ClearProps) => void;
+  highlight: ({ layer, point, color, width, height }: HighlightProps) => void;
+  color: ({ layer, point, color, width, height }: ColorProps) => void;
+  clear: ({ layer, point, width, height }: ClearProps) => void;
   move: ({ layer, from, to, width, height }: MoveProps) => void;
 };
 
@@ -58,6 +76,33 @@ const useRenderActions = ({
     [canvasContexts, canvasHeight, canvasWidth]
   );
 
+  const color = useCallback(
+    ({ layer, point: [x, y], color, width, height }: HighlightProps) => {
+      const ctx = canvasContexts[layer];
+
+      if (!ctx) return;
+
+      const pixelWidth = tileWidth * (width ?? 1);
+      const pixelHeight = tileHeight * (height ?? 1);
+      const pixelX = x * tileWidth;
+      const pixelY = y * tileHeight;
+
+      const image = ctx.getImageData(pixelX, pixelY, pixelWidth, pixelHeight);
+
+      for (let i = 0; i < image.data.length; i += 4) {
+        if (image.data[i + 3] > 0) {
+          image.data[i] = color[0];
+          image.data[i + 1] = color[1];
+          image.data[i + 2] = color[2];
+          image.data[i + 3] = color[3];
+        }
+      }
+
+      ctx.putImageData(image, pixelX, pixelY);
+    },
+    [canvasContexts, tileHeight, tileWidth]
+  );
+
   const draw = useCallback(
     ({ layer, point: [x, y], scaledTile, tile }: DrawProps) => {
       let width = tileWidth;
@@ -70,6 +115,9 @@ const useRenderActions = ({
         t = scaledTile.tile;
       }
 
+      const pixelX = x * tileWidth;
+      const pixelY = y * tileHeight;
+
       canvasContexts[layer]?.drawImage(
         spriteSheet,
         // sprite from sheet
@@ -78,13 +126,43 @@ const useRenderActions = ({
         tileWidth,
         tileHeight,
         // canvas draw location
-        x * tileWidth,
-        y * tileHeight,
+        pixelX,
+        pixelY,
         width,
         height
       );
+
+      if (t?.color) {
+        color({
+          layer,
+          point: [x, y],
+          color: t.color,
+          width: scaledTile?.width,
+          height: scaledTile?.height,
+        });
+      }
     },
     [canvasContexts, spriteSheet, tileHeight, tileWidth]
+  );
+
+  const highlight = useCallback(
+    ({ layer, point: [x, y], color, width, height }: HighlightProps) => {
+      const ctx = canvasContexts[layer];
+
+      if (!ctx) return;
+
+      const pixelWidth = tileWidth * (width ?? 1);
+      const pixelHeight = tileHeight * (height ?? 1);
+      const pixelX = x * tileWidth;
+      const pixelY = y * tileHeight;
+
+      const image = ctx.getImageData(pixelX, pixelY, pixelWidth, pixelHeight);
+
+      ctx.fillStyle = `#${color.join()}`;
+      ctx.fillRect(pixelX, pixelY, pixelWidth, pixelHeight);
+      ctx.putImageData(image, pixelX, pixelY);
+    },
+    [canvasContexts, tileHeight, tileWidth]
   );
 
   const clear = useCallback(
@@ -188,7 +266,7 @@ const useRenderActions = ({
   //   [canvasData]
   // );
 
-  return { clearLayer, draw, clear, move };
+  return { clearLayer, draw, highlight, color, clear, move };
 };
 
 export default useRenderActions;

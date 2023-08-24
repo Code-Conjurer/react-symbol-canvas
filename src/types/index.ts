@@ -1,8 +1,11 @@
 export type Point = [number, number];
 
+export type Color = [number, number, number, number];
+
 export type Tile = {
   tileImageX: number;
   tileImageY: number;
+  color?: Color;
 };
 
 export type TileLocation = {

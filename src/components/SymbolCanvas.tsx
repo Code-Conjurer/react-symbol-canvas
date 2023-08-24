@@ -105,7 +105,7 @@ const SymbolCanvas = ({
   //   //   };
   // }, [height, width]);
 
-  const { draw, move, clearLayer } = useRenderActions({
+  const { draw, move, clearLayer, clear } = useRenderActions({
     canvasContexts,
     spriteSheet: image,
     canvasWidth,
@@ -125,11 +125,11 @@ const SymbolCanvas = ({
           });
         }
       }
-      draw({ layer: 0, point: [0, 0], tile: { tileImageX: 1, tileImageY: 0 } });
+      draw({ layer: 1, point: [0, 0], tile: { tileImageX: 1, tileImageY: 0 } });
     }, 2000);
 
     setTimeout(() => {
-      move({ layer: 0, from: [0, 0], to: [0, 1] });
+      move({ layer: 1, from: [0, 0], to: [0, 1] });
     }, 3000);
     // setTimeout(() => {
     //   move({ layer: 0, from: [0, 0], to: [1, 0] });
