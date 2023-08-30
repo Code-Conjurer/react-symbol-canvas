@@ -1,6 +1,6 @@
-import { useCallback, useEffect, useMemo } from 'react';
-import { Color, Point, ScaledTile, Tile, TileLocation } from '../types';
-import { colorToHex, colorToRgb } from '../support/colorUtils';
+import { useCallback, useMemo } from 'react';
+import { Color, Point, ScaledTile, Tile } from '../types';
+import { colorToHex } from '../support/colorUtils';
 
 type ClearLayerProps = {
   layer: number;
