@@ -24,11 +24,14 @@ const useCurosr = ({
   const previousLoc = useRef<Point | null>(null);
 
   useEffect(() => {
+    const maxX = canvasContainer.current?.clientWidth ?? -1;
+    const maxY = canvasContainer.current?.clientHeight ?? -1;
+
     const handleMouseMove = (e: any) => {
       let x = e.offsetX;
       let y = e.offsetY;
 
-      if (x < 0 || y < 0) return;
+      if (x < 0 || y < 0 || x >= maxX || y >= maxY) return;
 
       let point: Point = [
         Math.floor(x / tileWidth),
