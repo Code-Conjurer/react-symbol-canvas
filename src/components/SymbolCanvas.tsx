@@ -28,8 +28,13 @@ const SymbolCanvas = ({
   width,
   height,
 }: SymbolCanvasProps) => {
-  const canvasRefs = useRef(
-    new Array(layers).fill(undefined).map(() => createRef<HTMLCanvasElement>())
+  const containerRef = useRef<HTMLDivElement>(null);
+  const canvasRefs = useMemo(
+    () =>
+      new Array(layers)
+        .fill(undefined)
+        .map(() => createRef<HTMLCanvasElement>()),
+    [layers]
   );
 
   const [canvasContexts, setContexts] = useState<
@@ -47,7 +52,7 @@ const SymbolCanvas = ({
   }, [spriteSheetSrc]);
 
   useEffect(() => {
-    const ctxs = canvasRefs.current.map((ref) => {
+    const ctxs = canvasRefs.map((ref) => {
       if (ref.current === null) return;
 
       const ctx = ref.current.getContext('2d')!;
@@ -59,9 +64,9 @@ const SymbolCanvas = ({
     });
 
     setContexts(ctxs);
-  }, []);
+  }, [canvasRefs]);
 
-  const { draw, color, highlight, move, clearLayer, clear } = useRenderActions({
+  const { draw, color, fill, move, clearLayer, clear } = useRenderActions({
     canvasContexts,
     spriteSheet: image,
     canvasWidth,
@@ -70,13 +75,32 @@ const SymbolCanvas = ({
     tileHeight,
   });
 
-  useCurosr();
+  useCurosr({
+    cursorTile: {
+      tileImageX: 8,
+      tileImageY: 5,
+      color: [0, 0, 0, 255],
+      highlight: [199, 166, 22, 255],
+    },
+    cursorLayer: layers - 1,
+    tileWidth,
+    tileHeight,
+    draw,
+    move,
+    canvasContainer: containerRef,
+  });
 
   return (
     <div
-      style={{ position: 'relative', width: canvasWidth, height: canvasHeight }}
+      ref={containerRef}
+      style={{
+        position: 'relative',
+        width: canvasWidth,
+        height: canvasHeight,
+        cursor: 'none',
+      }}
     >
-      {canvasRefs.current.map((ref, index) => (
+      {canvasRefs.map((ref, index) => (
         <CanvasLayer
           key={`${index}`}
           ref={ref}

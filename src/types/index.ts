@@ -6,6 +6,7 @@ export type Tile = {
   tileImageX: number;
   tileImageY: number;
   color?: Color;
+  highlight?: Color;
 };
 
 export type TileLocation = {
