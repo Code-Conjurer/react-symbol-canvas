@@ -31,7 +31,8 @@ const SymbolCanvas = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRefs = useMemo(
     () =>
-      new Array(layers)
+      // add 2 layers for cursor and effects layers
+      new Array(layers + 2)
         .fill(undefined)
         .map(() => createRef<HTMLCanvasElement>()),
     [layers]
@@ -52,7 +53,7 @@ const SymbolCanvas = ({
   }, [spriteSheetSrc]);
 
   useEffect(() => {
-    const ctxs = canvasRefs.map((ref) => {
+    const ctxs = canvasRefs.map((ref, index) => {
       if (ref.current === null) return;
 
       const ctx = ref.current.getContext('2d')!;
@@ -82,7 +83,7 @@ const SymbolCanvas = ({
       color: [0, 0, 0, 255],
       highlight: [199, 166, 22, 255],
     },
-    cursorLayer: layers - 1,
+    cursorLayer: layers + 1,
     tileWidth,
     tileHeight,
     draw,

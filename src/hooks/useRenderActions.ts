@@ -6,12 +6,19 @@ type ClearLayerProps = {
   layer: number;
 };
 
-type DrawProps = {
-  layer: number;
-  point: Point;
-  scaledTile?: ScaledTile;
-  tile?: Tile;
-};
+type DrawProps =
+  | {
+      layer: number;
+      point: Point;
+      scaledTile?: never;
+      tile: Tile;
+    }
+  | {
+      layer: number;
+      point: Point;
+      scaledTile: ScaledTile;
+      tile?: never;
+    };
 
 type FillProps = {
   layer: number;
@@ -286,17 +293,14 @@ const useRenderActions = ({
   //   [canvasData]
   // );
 
-  const result = useMemo(() => {
-    return {
-      clearLayer,
-      draw,
-      fill,
-      color,
-      clear,
-      move,
-    };
-  }, [clear, clearLayer, color, draw, fill, move]);
-  return result;
+  return {
+    clearLayer,
+    draw,
+    fill,
+    color,
+    clear,
+    move,
+  };
 };
 
 export default useRenderActions;
