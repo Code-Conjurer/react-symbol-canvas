@@ -56,7 +56,7 @@ const SymbolCanvas = ({
     const ctxs = canvasRefs.map((ref, index) => {
       if (ref.current === null) return;
 
-      const ctx = ref.current.getContext('2d')!;
+      const ctx = ref.current.getContext('2d', { willReadFrequently: true })!;
 
       // initalize image context
       ctx.imageSmoothingEnabled = false;
