@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { RenderActions } from '../../hooks/useRenderActions';
 
 type RenderActionsProviderContext = {
@@ -26,13 +26,15 @@ export const RenderActionsProviderProvider = ({
 }: React.PropsWithChildren) => {
   const [actions, setActions] = useState<RenderActions>(actionsStub);
 
+  const value = useMemo(() => ({ actions, setActions }), [actions]);
+
   return (
-    <RenderActionsProviderContext.Provider value={{ actions, setActions }}>
+    <RenderActionsProviderContext.Provider value={value}>
       {children}
     </RenderActionsProviderContext.Provider>
   );
 };
 
-export const useRenderActions = () => {
+export const useRenderActionsContext = () => {
   return React.useContext(RenderActionsProviderContext);
 };

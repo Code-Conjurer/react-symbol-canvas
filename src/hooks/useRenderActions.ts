@@ -293,14 +293,19 @@ const useRenderActions = ({
   //   [canvasData]
   // );
 
-  return {
-    clearLayer,
-    draw,
-    fill,
-    color,
-    clear,
-    move,
-  };
+  const actions = useMemo(
+    () => ({
+      clearLayer,
+      draw,
+      fill,
+      color,
+      clear,
+      move,
+    }),
+    [clear, clearLayer, color, draw, fill, move]
+  );
+
+  return actions;
 };
 
 export default useRenderActions;

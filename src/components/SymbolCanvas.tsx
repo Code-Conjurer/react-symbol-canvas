@@ -10,6 +10,7 @@ import { Layer, Point, ScaledTile, Tile, TileLocation } from '../types';
 import CanvasLayer from './CanvasLayer';
 import useRenderActions from '../hooks/useRenderActions';
 import useCurosr from '../hooks/useCursor';
+import { useRenderActionsContext } from './providers/RenderActionsProvider';
 
 export type SymbolCanvasProps = {
   spriteSheetSrc: string;
@@ -67,7 +68,7 @@ const SymbolCanvas = ({
     setContexts(ctxs);
   }, [canvasRefs]);
 
-  const { draw, color, fill, move, clearLayer, clear } = useRenderActions({
+  const actions = useRenderActions({
     canvasContexts,
     spriteSheet: image,
     canvasWidth,
@@ -86,10 +87,17 @@ const SymbolCanvas = ({
     cursorLayer: layers + 1,
     tileWidth,
     tileHeight,
-    draw,
-    move,
+    draw: actions.draw,
+    move: actions.move,
     canvasContainer: containerRef,
   });
+
+  const { setActions } = useRenderActionsContext();
+
+  useEffect(() => {
+    console.log(':- )');
+    setActions(actions);
+  }, [actions, setActions]);
 
   return (
     <div

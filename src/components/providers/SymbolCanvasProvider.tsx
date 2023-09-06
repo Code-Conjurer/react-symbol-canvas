@@ -2,7 +2,7 @@ import React from 'react';
 import { RenderActions } from '../../hooks/useRenderActions';
 import {
   RenderActionsProviderProvider,
-  useRenderActions,
+  useRenderActionsContext,
 } from './RenderActionsProvider';
 
 type SymbolCanvasProviderContext = RenderActions;
@@ -19,7 +19,7 @@ export const SymbolCanvasProvider = ({ children }: React.PropsWithChildren) => {
 };
 
 const ProviderWrapper = ({ children }: React.PropsWithChildren) => {
-  const { actions } = useRenderActions();
+  const { actions } = useRenderActionsContext();
 
   return (
     <SymbolCanvasProviderContext.Provider value={actions}>
