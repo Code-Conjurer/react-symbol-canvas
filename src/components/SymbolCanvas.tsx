@@ -95,7 +95,6 @@ const SymbolCanvas = ({
   const { setActions } = useRenderActionsContext();
 
   useEffect(() => {
-    console.log(':- )');
     setActions(actions);
   }, [actions, setActions]);
 
